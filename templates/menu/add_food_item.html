@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary shadow-sm px-4">
+                    <i class="fas fa-arrow-left"></i> ← Back to Dashboard
+                </a>
+                <a href="{% url 'admin_food_list' %}" class="btn btn-primary shadow-sm px-4">
+                    👁️ View Food List
+                </a>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white py-4 text-center">
+                    <h3 class="mb-0 fw-bold">➕ Add New Food Item</h3>
+                    <small class="opacity-75">Fill in the details below to add a new item to your menu</small>
+                </div>
+
+                <div class="card-body p-5">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Food Item Name <span class="text-danger">*</span></label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold text-dark">Category <span class="text-danger">*</span></label>
+                                {{ form.category }}
+                                {% if form.category.errors %}
+                                    <div class="text-danger small mt-1">{{ form.category.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold text-dark">Price <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted">₹</span>
+                                    {{ form.price }}
+                                </div>
+                                {% if form.price.errors %}
+                                    <div class="text-danger small mt-1">{{ form.price.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Description <span class="text-danger">*</span></label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Food Image</label>
+                            <div class="p-3 border rounded bg-light">
+                                {{ form.image }}
+                                <small class="text-muted d-block mt-2">Recommended size: 800x600px (PNG, JPG)</small>
+                            </div>
+                            {% if form.image.errors %}
+                                <div class="text-danger small mt-1">{{ form.image.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                {{ form.available }}
+                                <label class="form-check-label ms-2 fw-semibold" for="{{ form.available.id_for_label }}">
+                                    Make this item available for order
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr class="my-5">
+
+                        <div class="d-flex justify-content-end gap-3">
+                            <a href="{% url 'admin_dashboard' %}" class="btn btn-light btn-lg px-5 border">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">
+                                Save Item
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f4f7f6;
+    }
+
+    /* Input Styling */
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        padding: 12px 15px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.1);
+    }
+
+    /* Button Animations */
+    .btn {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-radius: 8px;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Checkbox Styling */
+    .form-check-input:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+    .card {
+        border-radius: 16px;
+    }
+
+    .card-header {
+        border-radius: 16px 16px 0 0 !important;
+    }
+</style>
+{% endblock %}

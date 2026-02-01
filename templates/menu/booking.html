@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">🍽️ Choose Your Table</h2>
+        <a href="{% url 'my_bookings' %}" class="btn btn-outline-primary fw-bold px-4 rounded-pill shadow-sm">
+            📅 My Bookings
+        </a>
+    </div>
+
+    <div class="row">
+        {% for table in tables %}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow border-0 rounded-4 overflow-hidden">
+
+                {% if table.image %}
+                    <img src="{{ table.image.url }}" class="card-img-top" style="height:220px; object-fit:cover;" alt="Table {{ table.table_number }}">
+                {% endif %}
+
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold mb-0">Table {{ table.table_number }}</h5>
+                        <span class="badge bg-primary">
+                            👥 {{ table.seats }} Seats
+                        </span>
+                    </div>
+
+                    <p class="mt-2 text-muted">
+                        {% if table.reviews.count %}
+                            ⭐ {{ table.average_rating|stringformat:".1f" }}/5 ({{ table.reviews.count }} reviews)
+                        {% else %}
+                            <span class="text-muted small">No ratings yet</span>
+                        {% endif %}
+                    </p>
+
+                    <a href="{% url 'table_detail' table.id %}"
+                       class="btn btn-warning w-100 fw-bold rounded-3 mt-2 shadow-sm">
+                        View Details & Book
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h4 class="text-muted">No tables available at the moment.</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

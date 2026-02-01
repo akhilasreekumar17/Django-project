@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* ADMIN LOGIN PAGE BACKGROUND */
+    .admin-login-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background-image: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 73, 94, 0.9) 100%),
+                          url("https://images.unsplash.com/photo-1557804506-669714d2e9d8");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .admin-login-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+        width: 100%;
+        max-width: 450px;
+        animation: slideInUp 0.6s ease;
+        border-top: 5px solid #dc3545;
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .admin-login-card .card-body {
+        padding: 45px 35px;
+    }
+
+    .admin-login-card h3 {
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .admin-login-card h3 span {
+        color: #dc3545;
+    }
+
+    .admin-login-card > p {
+        color: #7f8c8d;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .admin-login-card .form-label {
+        font-weight: 600;
+        color: #34495e;
+        margin-bottom: 0.5rem;
+    }
+
+    .admin-login-card .form-control {
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        height: 45px;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .admin-login-card .form-control:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+
+    .admin-login-card .btn-danger {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        height: 45px;
+        border-radius: 8px;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .admin-login-card .btn-danger:hover {
+        background: linear-gradient(135deg, #c82333 0%, #a71d2a 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(220, 53, 69, 0.3);
+    }
+
+    .admin-login-card hr {
+        margin: 25px 0;
+        border: none;
+        border-top: 1px solid #ecf0f1;
+    }
+
+    .admin-login-card > p:last-of-type {
+        text-align: center;
+        margin: 0;
+        color: #34495e;
+    }
+
+    .admin-login-card > p:last-of-type a {
+        color: #667eea;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .admin-login-card > p:last-of-type a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+
+    .alert {
+        border-radius: 8px;
+        border: none;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="admin-login-container">
+    <div class="admin-login-card">
+        <div class="card-body">
+
+            <h3 class="text-center">🔐 <span>Admin</span> Portal</h3>
+            <p>Authorized access only - Admin login required</p>
+
+            <!-- MESSAGES -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">👤 Admin Username</label>
+                    <input type="text"
+                           name="username"
+                           class="form-control"
+                           placeholder="Enter admin username"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">🔑 Admin Password</label>
+                    <input type="password"
+                           name="password"
+                           class="form-control"
+                           placeholder="Enter admin password"
+                           required>
+                </div>
+
+                <button type="submit" class="btn btn-danger w-100">
+                    ✓ Login as Admin
+                </button>
+            </form>
+
+            <hr>
+
+            <p>
+                Not an admin?
+                <a href="{% url 'login' %}">User Login →</a>
+            </p>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

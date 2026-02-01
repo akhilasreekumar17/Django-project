@@ -1,0 +1,490 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* ORDER PAGE STYLING */
+    .order-page {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 40px 20px;
+    }
+
+    .order-header {
+        max-width: 1400px;
+        margin: 0 auto 40px;
+        text-align: center;
+        animation: slideInDown 0.6s ease;
+    }
+
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .order-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .order-header p {
+        font-size: 1.1rem;
+        color: #7f8c8d;
+    }
+
+    .food-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* CATEGORY FILTER TABS - SWIGGY STYLE */
+    .category-filters {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        overflow-x: auto;
+        display: flex;
+        gap: 12px;
+    }
+
+    .category-filters::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .category-filters::-webkit-scrollbar-track {
+        background: #ecf0f1;
+        border-radius: 10px;
+    }
+
+    .category-filters::-webkit-scrollbar-thumb {
+        background: #bdc3c7;
+        border-radius: 10px;
+    }
+
+    .category-btn {
+        padding: 12px 24px;
+        border: 2px solid #ecf0f1;
+        border-radius: 25px;
+        background: white;
+        color: #34495e;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+        font-size: 0.95rem;
+    }
+
+    .category-btn:hover {
+        border-color: #f39c12;
+        color: #f39c12;
+        box-shadow: 0 4px 12px rgba(243, 156, 18, 0.2);
+    }
+
+    .category-btn.active {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        border-color: transparent;
+        color: white;
+        box-shadow: 0 8px 20px rgba(243, 156, 18, 0.3);
+    }
+
+    .category-btn[data-category="all"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+        color: white;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .category-btn[data-category="all"]:hover {
+        box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    /* FOOD CARDS GRID */
+    .food-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .food-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        animation: fadeInUp 0.6s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .food-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+    }
+
+    .food-image-container {
+        position: relative;
+        height: 200px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        overflow: hidden;
+    }
+
+    .food-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .food-card:hover .food-image {
+        transform: scale(1.1);
+    }
+
+    .no-image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    .category-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(243, 156, 18, 0.95);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .availability-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .available {
+        background: rgba(39, 174, 96, 0.95);
+        color: white;
+    }
+
+    .unavailable {
+        background: rgba(220, 53, 69, 0.95);
+        color: white;
+    }
+
+    .food-details {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .food-name {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+
+    .food-description {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+        display: -webkit-box;
+        line-clamp: 2;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        flex: 1;
+    }
+
+    .food-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 15px;
+        border-top: 1px solid #ecf0f1;
+    }
+
+    .food-price {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #27ae60;
+    }
+
+    .add-to-cart-btn {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        border: none;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .add-to-cart-btn:hover {
+        background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(243, 156, 18, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .add-to-cart-btn.disabled {
+        background: #bdc3c7;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .login-btn {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        border: none;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .login-btn:hover {
+        background: linear-gradient(135deg, #2980b9 0%, #1f618d 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-state h3 {
+        font-size: 2rem;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        font-size: 1.1rem;
+        color: #7f8c8d;
+        margin-bottom: 2rem;
+    }
+
+    .back-home-btn {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        border: none;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 40px;
+    }
+
+    .back-home-btn:hover {
+        background: linear-gradient(135deg, #2980b9 0%, #1f618d 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    .category-section-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 40px 0 20px 0;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #f39c12;
+    }
+
+    @media (max-width: 768px) {
+        .food-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .order-header h1 {
+            font-size: 1.8rem;
+        }
+
+        .category-filters {
+            padding: 15px;
+        }
+
+        .category-btn {
+            padding: 10px 18px;
+            font-size: 0.85rem;
+        }
+    }
+</style>
+
+<div class="order-page">
+    <div class="order-header">
+        <h1>🍽️ Order Delicious Food</h1>
+        <p>Browse our mouth-watering menu and add items to your cart</p>
+    </div>
+
+    <div class="food-container">
+        {% if foods %}
+            <!-- CATEGORY FILTER TABS -->
+            <div class="category-filters">
+                <button class="category-btn active" data-category="all" onclick="filterByCategory('all')">
+                    🍽️ All Items
+                </button>
+                {% for category in categories %}
+                    <button class="category-btn" data-category="{{ category.id }}" onclick="filterByCategory('{{ category.id }}')">
+                        {{ category.name }}
+                    </button>
+                {% endfor %}
+            </div>
+
+            <!-- FOOD ITEMS GRID -->
+            <div class="food-grid" id="food-grid">
+                {% for food in foods %}
+                    <div class="food-card" data-category-id="{% if food.category %}{{ food.category.id }}{% endif %}">
+                        <!-- FOOD IMAGE -->
+                        <div class="food-image-container">
+                            {% if food.image %}
+                                <img src="{{ food.image.url }}" alt="{{ food.name }}" class="food-image">
+                            {% else %}
+                                <div class="no-image-placeholder">🍽️</div>
+                            {% endif %}
+
+                            <!-- CATEGORY BADGE -->
+                            <span class="category-badge">
+                                {% if food.category %}
+                                    {{ food.category.name }}
+                                {% else %}
+                                    Misc
+                                {% endif %}
+                            </span>
+
+                            <!-- AVAILABILITY BADGE -->
+                            <span class="availability-badge {% if food.available %}available{% else %}unavailable{% endif %}">
+                                {% if food.available %}✓ Available{% else %}Out of Stock{% endif %}
+                            </span>
+                        </div>
+
+                        <!-- FOOD DETAILS -->
+                        <div class="food-details">
+                            <h3 class="food-name">{{ food.name }}</h3>
+                            <p class="food-description">{{ food.description }}</p>
+
+                            <!-- FOOTER -->
+                            <div class="food-footer">
+                                <span class="food-price">₹{{ food.price }}</span>
+                                {% if food.available %}
+                                    {% if user.is_authenticated %}
+                                        <a href="{% url 'add_to_cart' food.id %}" class="add-to-cart-btn">
+                                            🛒 Add
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'login' %}?next=/order/" class="login-btn">
+                                            Login
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <button class="add-to-cart-btn disabled" disabled>
+                                        Not Available
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h3>🍽️ No Food Items Available</h3>
+                <p>We're preparing our menu. Please check back soon!</p>
+            </div>
+        {% endif %}
+
+        <div class="text-center">
+            <a href="{% url 'home' %}" class="back-home-btn">
+                ← Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterByCategory(categoryId) {
+        const cards = document.querySelectorAll('.food-card');
+        const buttons = document.querySelectorAll('.category-btn');
+        
+        // Update active button
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        // Filter cards
+        cards.forEach(card => {
+            if (categoryId === 'all') {
+                card.classList.remove('hidden');
+            } else {
+                const cardCategoryId = card.getAttribute('data-category-id');
+                if (cardCategoryId === categoryId) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            }
+        });
+    }
+</script>
+
+{% endblock %}

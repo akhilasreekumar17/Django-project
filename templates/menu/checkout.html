@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .checkout-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 40px 20px 120px;
+    }
+
+    .checkout-header {
+        text-align: center;
+        margin-bottom: 40px;
+        animation: slideInDown 0.6s ease;
+    }
+
+    .checkout-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .checkout-header p {
+        font-size: 1rem;
+        color: #7f8c8d;
+    }
+
+    .checkout-wrapper {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .checkout-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .payment-card,
+    .order-review-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        height: fit-content;
+    }
+
+    .payment-card h2,
+    .order-review-card h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .payment-options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .payment-option input {
+        display: none;
+    }
+
+    .payment-option label {
+        display: block;
+        padding: 18px 20px;
+        border: 2px solid #ecf0f1;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .payment-option input:checked + label {
+        border-color: #27ae60;
+        background: rgba(39, 174, 96, 0.1);
+        font-weight: 600;
+        color: #27ae60;
+    }
+
+    .payment-option label:hover {
+        border-color: #27ae60;
+    }
+
+    .order-items-review,
+    .price-breakdown {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .review-item,
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #ecf0f1;
+    }
+
+    .review-item:last-child,
+    .price-row:last-child {
+        border-bottom: none;
+    }
+
+    .price-row.total {
+        font-size: 1.2rem;
+        font-weight: 700;
+        border-top: 2px solid #ecf0f1;
+        padding-top: 15px;
+    }
+
+    .price-row.total .amount {
+        color: #27ae60;
+    }
+
+    .checkout-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-back {
+        flex: 1;
+        padding: 15px;
+        border: 2px solid #3498db;
+        background: white;
+        color: #3498db;
+        border-radius: 8px;
+        font-weight: 700;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .btn-place-order {
+        flex: 1;
+        padding: 15px;
+        background: linear-gradient(135deg, #27ae60, #229954);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+    }
+
+    .btn-place-order:hover {
+        box-shadow: 0 10px 25px rgba(39, 174, 96, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .checkout-row {
+            grid-template-columns: 1fr;
+        }
+        .checkout-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="checkout-container">
+    <div class="checkout-header">
+        <h1>🍽️ Finalize Order</h1>
+        <p>Review items and select your preferred payment method</p>
+    </div>
+
+    <div class="checkout-wrapper">
+        <form method="POST" action="{% url 'process_payment' %}">
+            {% csrf_token %}
+
+            <div class="checkout-row">
+                <div class="payment-card">
+                    <h2>💰 Payment Method</h2>
+
+                    <div class="payment-options">
+                        <div class="payment-option">
+                            <input type="radio" id="upi" name="payment_method" value="UPI" required>
+                            <label for="upi">📱 UPI Payment</label>
+                        </div>
+                        <div class="payment-option">
+                            <input type="radio" id="card" name="payment_method" value="Card">
+                            <label for="card">💳 Credit / Debit Card</label>
+                        </div>
+                        <div class="payment-option">
+                            <input type="radio" id="cod" name="payment_method" value="Cash">
+                            <label for="cod">💵 Pay at Counter / Cash</label>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:30px;">
+                        <label style="font-weight: 600; color: #2c3e50; display: block; margin-bottom: 8px;">
+                            📝 Special Instructions (e.g., Less Spicy)
+                        </label>
+                        <textarea name="special_instructions" rows="4"
+                                  style="width:100%; border: 2px solid #ecf0f1; border-radius:8px; padding:12px;"></textarea>
+                    </div>
+                </div>
+
+                <div class="order-review-card">
+                    <h2>📋 Order Review</h2>
+
+                    <div class="order-items-review">
+                        {% for item in cart_items %}
+                        <div class="review-item">
+                            <span>{{ item.food.name }} × {{ item.quantity }}</span>
+                            <strong>₹{{ item.get_subtotal }}</strong>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="price-breakdown">
+                        <div class="price-row">
+                            <span>Items Subtotal</span>
+                            <span>₹{{ subtotal }}</span>
+                        </div>
+                        <div class="price-row total">
+                            <span>Grand Total</span>
+                            <span class="amount">₹{{ subtotal }}</span>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 0.85rem; color: #7f8c8d; text-align: center; margin-top: 10px;">
+                        <i>Your order will be marked as <b>Pending</b> until confirmed by the kitchen.</i>
+                    </p>
+                </div>
+            </div>
+
+            <div class="checkout-actions">
+                <a href="{% url 'view_cart' %}" class="btn-back">← Edit Tray</a>
+                <button type="submit" class="btn-place-order">✓ Confirm & Place Order</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

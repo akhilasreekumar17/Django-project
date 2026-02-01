@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .success-container {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px 140px; /* 👈 footer-safe padding */
+    }
+
+    .success-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 600px;
+        animation: slideInDown 0.6s ease;
+        overflow: hidden;
+    }
+
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .success-header {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+    }
+
+    .success-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+
+    .success-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .order-number {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-top: 15px;
+    }
+
+    .success-body {
+        padding: 40px 30px;
+    }
+
+    .status-message {
+        background: #d4edda;
+        border-left: 5px solid #28a745;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        color: #155724;
+    }
+
+    .order-details {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+    .detail-section {
+        margin-bottom: 25px;
+    }
+
+    .section-title {
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #2c3e50;
+    }
+
+    .detail-row,
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #ecf0f1;
+    }
+
+    .detail-row:last-child,
+    .price-row:last-child {
+        border-bottom: none;
+    }
+
+    .order-items {
+        background: white;
+        border-radius: 8px;
+        margin-top: 15px;
+    }
+
+    .item-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid #ecf0f1;
+    }
+
+    .item-row:last-child {
+        border-bottom: none;
+    }
+
+    .item-name {
+        font-weight: 600;
+    }
+
+    .item-qty {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+
+    .item-price {
+        font-weight: 700;
+        color: #27ae60;
+    }
+
+    .price-row.total {
+        font-size: 1.2rem;
+        font-weight: 700;
+        border-top: 2px solid #ecf0f1;
+        padding-top: 15px;
+    }
+
+    .total-amount {
+        color: #27ae60;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-track,
+    .btn-home {
+        flex: 1;
+        padding: 14px;
+        border-radius: 8px;
+        font-weight: 700;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .btn-track {
+        background: #3498db;
+        color: white;
+    }
+
+    .btn-home {
+        background: #ecf0f1;
+        color: #2c3e50;
+    }
+
+    @media (max-width: 768px) {
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .success-body {
+            padding: 25px 20px;
+        }
+    }
+</style>
+
+<div class="success-container">
+    <div class="success-card">
+        <div class="success-header">
+            <div class="success-icon">✅</div>
+            <h1>Order Placed Successfully!</h1>
+            <div class="order-number">Order #{{ order.order_number }}</div>
+        </div>
+
+        <div class="success-body">
+            <div class="status-message">
+                <strong>⏳ Waiting for Confirmation</strong><br>
+                Your order has been sent to the restaurant.
+            </div>
+
+            <div class="order-details">
+                <div class="detail-section">
+                    <div class="section-title">📦 Order Info</div>
+                    <div class="detail-row">
+                        <span>Order Date</span>
+                        <span>{{ order.created_at|date:"d M Y, H:i" }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>Status</span>
+                        <span>{{ order.get_order_status_display }}</span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="section-title">🍽️ Items</div>
+                    <div class="order-items">
+                        {% for item in order_items %}
+                        <div class="item-row">
+                            <div>
+                                <div class="item-name">{{ item.food.name }}</div>
+                                <div class="item-qty">Qty: {{ item.quantity }}</div>
+                            </div>
+                            <div class="item-price">₹{{ item.subtotal }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="section-title">💰 Total</div>
+                    <div class="price-row total">
+                        <span>Total Amount</span>
+                        <span class="total-amount">₹{{ order.final_amount }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'my_orders' %}" class="btn-track">📍 Track Order</a>
+                <a href="{% url 'home' %}" class="btn-home">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.review-wrapper {
+    max-width: 500px;
+    margin: 60px auto;
+}
+
+.review-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+}
+
+.star-input {
+    display: flex;
+    gap: 8px;
+    font-size: 1.8rem;
+}
+
+.star-input input {
+    display: none;
+}
+
+.star-input label {
+    cursor: pointer;
+    color: #ccc;
+}
+
+.star-input input:checked ~ label,
+.star-input label:hover,
+.star-input label:hover ~ label {
+    color: #f39c12;
+}
+
+textarea {
+    resize: none;
+}
+</style>
+
+<div class="review-wrapper">
+    <div class="review-card">
+
+        <h3 class="text-center mb-3">⭐ Review Table {{ table.table_number }}</h3>
+        <p class="text-center text-muted">
+            Share your experience with other customers
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- STAR RATING -->
+            <label class="fw-bold mb-2">Rating</label>
+            <div class="star-input mb-3">
+                {% for i in "54321" %}
+                    <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}" required>
+                    <label for="star{{ i }}">★</label>
+                {% endfor %}
+            </div>
+
+            <!-- COMMENT -->
+            <label class="fw-bold mb-2">Comment</label>
+            <textarea name="comment"
+                      class="form-control mb-3"
+                      rows="4"
+                      placeholder="Write your review..."
+                      required></textarea>
+
+            <button type="submit" class="btn btn-warning w-100 fw-bold">
+                ✅ Submit Review
+            </button>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

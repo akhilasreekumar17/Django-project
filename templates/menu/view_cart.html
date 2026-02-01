@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* CART PAGE STYLING */
+    .cart-container {
+        padding: 40px 0;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .cart-header {
+        margin-bottom: 30px;
+        animation: slideInDown 0.5s ease;
+    }
+
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .cart-header h1 {
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 2.5rem;
+    }
+
+    .continue-shopping-btn {
+        display: inline-block;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .continue-shopping-btn:hover {
+        transform: translateX(-5px);
+    }
+
+    /* CART ITEMS CARD */
+    .cart-items-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .cart-items-card .card-header {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important;
+        color: white;
+        padding: 25px;
+        border: none;
+    }
+
+    .cart-items-card .card-header h3 {
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .cart-items-card .card-body {
+        padding: 25px;
+    }
+
+    /* CART TABLE STYLING */
+    .cart-table {
+        margin: 0;
+    }
+
+    .cart-table thead th {
+        background: #ecf0f1;
+        border: none;
+        color: #2c3e50;
+        font-weight: 700;
+        padding: 15px;
+        border-bottom: 2px solid #bdc3c7;
+    }
+
+    .cart-table tbody td {
+        padding: 18px 15px;
+        vertical-align: middle;
+        border-color: #ecf0f1;
+    }
+
+    .cart-table strong {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .quantity-control {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .quantity-control input {
+        width: 70px;
+        text-align: center;
+        border: 1px solid #bdc3c7;
+        border-radius: 5px;
+    }
+
+    .quantity-control button {
+        padding: 5px 12px;
+        font-size: 0.85rem;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        border: none;
+        color: white;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .remove-btn {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+        border: none !important;
+        color: white !important;
+        padding: 6px 12px !important;
+        border-radius: 5px !important;
+        font-size: 0.85rem;
+    }
+
+    .add-more-btn {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    /* ORDER SUMMARY CARD */
+    .order-summary-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .order-summary-card .card-header {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%) !important;
+        color: white;
+        padding: 20px;
+        border: none;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        color: #34495e;
+    }
+
+    .total-row {
+        font-size: 1.3rem;
+        padding: 20px 0;
+        margin-top: 10px;
+        border-top: 2px solid #bdc3c7;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .confirm-order-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+        text-align: center;
+        display: block;
+        text-decoration: none;
+    }
+
+    .confirm-order-btn:hover {
+        background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(39, 174, 96, 0.3);
+        color: white;
+    }
+</style>
+
+<div class="cart-container">
+    <div class="container">
+        <div class="cart-header text-center">
+            <h1>📋 Your Order</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <a href="{% url 'order_food' %}" class="btn btn-secondary continue-shopping-btn">
+                    ← Back to Menu
+                </a>
+
+                <div class="card cart-items-card">
+                    <div class="card-header">
+                        <h3>Selected Items</h3>
+                    </div>
+
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if cart_items %}
+                            <div class="table-responsive">
+                                <table class="table cart-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Food Item</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Subtotal</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in cart_items %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ item.food.name }}</strong><br>
+                                                <small class="text-muted">{{ item.food.category.name }}</small>
+                                            </td>
+                                            <td>₹{{ item.food.price }}</td>
+                                            <td>
+                                                <form method="POST" action="{% url 'update_cart' item.id %}" class="quantity-control">
+                                                    {% csrf_token %}
+                                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1">
+                                                    <button type="submit">Update</button>
+                                                </form>
+                                            </td>
+                                            <td><strong>₹{{ item.get_subtotal }}</strong></td>
+                                            <td>
+                                                <button type="button" class="btn remove-btn" data-bs-toggle="modal" data-bs-target="#removeModal{{ item.id }}">
+                                                    🗑️ Remove
+                                                </button>
+                                            </td>
+                                        </tr>
+
+                                        <div class="modal fade" id="removeModal{{ item.id }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger text-white">
+                                                        <h5 class="modal-title">Remove Item?</h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Remove <strong>{{ item.food.name }}</strong> from your order?
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <form method="POST" action="{% url 'remove_from_cart' item.id %}">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-danger">Confirm Remove</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-4">
+                                <a href="{% url 'order_food' %}" class="add-more-btn">+ Add More Items</a>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <h5>Your tray is empty!</h5>
+                                <a href="{% url 'order_food' %}" class="btn btn-primary mt-3">Browse Menu</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card order-summary-card sticky-top" style="top: 20px;">
+                    <div class="card-header text-center">
+                        <h5>Order Total</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if cart_items %}
+                            <div class="summary-row">
+                                <span>Items Subtotal:</span>
+                                <strong>₹{{ total }}</strong>
+                            </div>
+                            
+                            <div class="summary-row total-row">
+                                <span>Grand Total:</span>
+                                <strong class="text-success">₹{{ total }}</strong>
+                            </div>
+                            
+                            <a href="{% url 'checkout' %}" class="confirm-order-btn">
+                                🍽️ Place Order
+                            </a>
+                        {% else %}
+                            <div class="alert alert-info text-center">Tray is empty</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
