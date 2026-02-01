@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.edit-table-container {
+    max-width: 700px;
+    margin: 40px auto;
+}
+
+.edit-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 30px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+}
+
+.edit-card h2 {
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.form-label {
+    font-weight: 600;
+}
+
+.preview-img {
+    width: 100%;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+</style>
+
+<div class="edit-table-container">
+    <div class="edit-card">
+
+        <h2>🪑 Edit Table</h2>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Table Number</label>
+                <input type="text"
+                       name="table_number"
+                       class="form-control"
+                       value="{{ table.table_number }}"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Seats</label>
+                <input type="number"
+                       name="seats"
+                       class="form-control"
+                       value="{{ table.seats }}"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea name="description"
+                          class="form-control"
+                          rows="3">{{ table.description }}</textarea>
+            </div>
+
+            {% if table.image %}
+                <label class="form-label">Current Image</label>
+                <img src="{{ table.image.url }}" class="preview-img">
+            {% endif %}
+
+            <div class="mb-3">
+                <label class="form-label">Change Image</label>
+                <input type="file" name="image" class="form-control">
+            </div>
+
+            <div class="form-check mb-4">
+                <input type="checkbox"
+                       name="is_active"
+                       class="form-check-input"
+                       id="activeCheck"
+                       {% if table.is_active %}checked{% endif %}>
+                <label class="form-check-label" for="activeCheck">
+                    Available for booking
+                </label>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'admin_tables' %}" class="btn btn-secondary">
+                    ← Back
+                </a>
+                <button type="submit" class="btn btn-warning fw-bold">
+                    💾 Update Table
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

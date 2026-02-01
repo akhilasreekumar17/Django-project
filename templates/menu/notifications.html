@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.notification-container {
+    max-width: 900px;
+    margin: 40px auto;
+}
+
+.notification-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    border-left: 5px solid #3498db;
+}
+
+.notification-card.unread {
+    background: #f0f8ff;
+}
+
+.notification-title {
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.notification-message {
+    color: #555;
+    margin: 10px 0;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-track {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.btn-track:hover {
+    background: linear-gradient(135deg, #229954, #1e8449);
+    color: white;
+}
+
+.btn-read {
+    background: #6c757d;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+</style>
+
+<div class="notification-container">
+    <h2 class="mb-4">🔔 Notifications</h2>
+
+    {% if notifications %}
+        {% for n in notifications %}
+            <div class="notification-card {% if not n.is_read %}unread{% endif %}">
+                <div class="notification-title">{{ n.title }}</div>
+                <div class="notification-message">{{ n.message }}</div>
+                <small class="text-muted">{{ n.created_at|date:"d M Y, H:i" }}</small>
+
+                <div class="notification-actions">
+                    {% if n.order %}
+                        <a href="{% url 'my_orders' %}?highlight={{ n.order.id }}" class="btn-track">
+                            📍 Track Order
+                        </a>
+                    {% endif %}
+
+                    {% if not n.is_read %}
+                        <form method="POST" action="{% url 'mark_notification_read' n.id %}">
+                            {% csrf_token %}
+                            <button class="btn-read">Mark as Read</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No notifications yet.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* REGISTER PAGE BACKGROUND */
+    .register-container {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        background-image: linear-gradient(135deg, rgba(240, 147, 251, 0.9) 0%, rgba(245, 87, 108, 0.9) 100%),
+                          url("https://tse1.mm.bing.net/th/id/OIP.Qqjsm-8d2mhgf4Tm1NzgRAHaDt?pid=Api&P=0&h=180");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .register-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        width: 100%;
+        max-width: 480px;
+        animation: slideInUp 0.6s ease;
+        border-top: 5px solid #f5576c;
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .register-card .card-body {
+        padding: 45px 35px;
+    }
+
+    .register-card h2 {
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .register-card > p {
+        color: #7f8c8d;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .register-card .form-label {
+        font-weight: 600;
+        color: #34495e;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .register-card .form-control {
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        height: 45px;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .register-card .form-control:focus {
+        border-color: #f5576c;
+        box-shadow: 0 0 0 0.2rem rgba(245, 87, 108, 0.25);
+    }
+
+    .register-card .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        height: 45px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .register-card .btn-primary:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #5a3d7f 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .register-card > p:last-child {
+        text-align: center;
+        margin-top: 20px;
+        color: #34495e;
+    }
+
+    .register-card > p:last-child a {
+        color: #667eea;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .register-card > p:last-child a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+
+    .alert {
+        border-radius: 8px;
+        border: none;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="register-container">
+    <div class="register-card">
+        <div class="card-body">
+
+            <h2 class="text-center">🎉 Create Account</h2>
+            <p>Join Spice Garden for easy booking and amazing food</p>
+
+            <!-- MESSAGES -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">👤 Full Name</label>
+                    <input type="text" name="full_name"
+                           class="form-control"
+                           placeholder="Enter your full name" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">🔤 Username</label>
+                    <input type="text" name="username"
+                           class="form-control"
+                           placeholder="Choose a unique username" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">📧 Email</label>
+                    <input type="email" name="email"
+                           class="form-control"
+                           placeholder="Enter your email address" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">🔑 Password</label>
+                    <input type="password" name="password"
+                           class="form-control"
+                           placeholder="Create a strong password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                    ✓ Register
+                </button>
+            </form>
+
+            <p>
+                Already have an account?
+                <a href="{% url 'login' %}">Login →</a>
+            </p>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

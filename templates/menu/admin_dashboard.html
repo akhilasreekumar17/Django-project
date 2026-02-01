@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.dashboard-wrapper {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-title {
+    font-weight: 700;
+    margin-bottom: 40px;
+}
+
+/* CARD */
+.admin-card {
+    height: 280px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.admin-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+}
+
+.admin-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 1;
+}
+
+.admin-card-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.admin-icon {
+    font-size: 2.8rem;
+}
+
+.admin-btn {
+    border-radius: 30px;
+    font-weight: 600;
+}
+
+/* BACKGROUNDS */
+.food-bg {
+    background: url("https://images.unsplash.com/photo-1540189549336-e6e99c3679fe") center/cover no-repeat;
+}
+
+.order-bg {
+    background: url("https://images.unsplash.com/photo-1600891964599-f61ba0e24092") center/cover no-repeat;
+}
+
+.table-bg {
+    background: url("https://tse1.mm.bing.net/th/id/OIP.4VV8l1JmtQypeJXzWq9dWgHaE8?pid=Api&P=0&h=180") center/cover no-repeat;
+}
+</style>
+
+<div class="container dashboard-wrapper">
+    <div class="w-100">
+
+        <h2 class="text-center dashboard-title">
+            🛠️ Restaurant Admin Dashboard
+        </h2>
+
+        <div class="row justify-content-center g-4">
+
+            <!-- FOOD -->
+            <div class="col-md-4">
+                <div class="admin-card food-bg">
+                    <div class="admin-card-content">
+                        <div>
+                            <div class="admin-icon">🍽️</div>
+                            <h4 class="mt-3">Food Management</h4>
+                            <p>Add, edit & manage menu items.</p>
+                        </div>
+                        <a href="{% url 'add_food_item' %}" class="btn btn-success admin-btn">
+                            Manage Food
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ORDERS -->
+            <div class="col-md-4">
+                <div class="admin-card order-bg">
+                    <div class="admin-card-content">
+                        <div>
+                            <div class="admin-icon">📋</div>
+                            <h4 class="mt-3">Order Management</h4>
+                            <p>Approve, prepare & track orders.</p>
+                        </div>
+                        <a href="{% url 'admin_orders' %}" class="btn btn-primary admin-btn">
+                            View Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLES -->
+            <div class="col-md-4">
+                <div class="admin-card table-bg">
+                    <div class="admin-card-content">
+                        <div>
+                            <div class="admin-icon">🪑</div>
+                            <h4 class="mt-3">Table Management</h4>
+                            <p>Add tables, images & availability.</p>
+                        </div>
+                        <a href="{% url 'admin_tables' %}" class="btn btn-warning admin-btn">
+                            Manage Tables
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

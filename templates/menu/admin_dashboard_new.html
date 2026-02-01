@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .admin-section {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.05) 0%, rgba(52, 152, 219, 0.05) 100%);
+        min-height: 100vh;
+        padding: 40px 0;
+    }
+
+    .admin-header {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+        padding: 30px 0;
+        margin-bottom: 40px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-header h2 {
+        font-weight: 700;
+        font-size: 2rem;
+    }
+
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 30px;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+        border-radius: 12px 12px 0 0;
+        padding: 20px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        border: none;
+        font-weight: 600;
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        border: none;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #2980b9 0%, #1f618d 100%);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        border: none;
+        font-weight: 600;
+    }
+
+    .btn-danger:hover {
+        background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+    }
+
+    .table {
+        font-size: 0.95rem;
+    }
+
+    .table thead {
+        background: #ecf0f1;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid #ecf0f1;
+        transition: background-color 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+</style>
+
+<div class="admin-section">
+    <div class="admin-header">
+        <div class="container">
+            <h2>⚙️ Admin Dashboard</h2>
+            <p class="mb-0 text-light">Manage food items and table bookings</p>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- FOOD MANAGEMENT -->
+        <div class="card">
+            <div class="card-header">
+                <span>🍴 Food Items</span>
+                <a href="{% url 'add_food_item' %}" class="btn btn-sm btn-success">
+                    + Add Food Item
+                </a>
+            </div>
+            <div class="card-body p-0">
+
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Available</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for food in foods %}
+                            <tr>
+                                <td><strong>{{ food.name }}</strong></td>
+                                <td>{{ food.category.name }}</td>
+                                <td>₹{{ food.price }}</td>
+                                <td>
+                                    {% if food.available %}
+                                        <span class="badge bg-success">✓ Available</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">✗ Not Available</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'edit_food_item' food.id %}"
+                                       class="btn btn-sm btn-primary">Edit</a>
+                                    <a href="{% url 'delete_food_item' food.id %}"
+                                       class="btn btn-sm btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">No food items added yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TABLE BOOKINGS -->
+        <div class="card">
+            <div class="card-header">
+                <span>📅 Table Bookings</span>
+            </div>
+            <div class="card-body p-0">
+
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>User</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Guests</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td><strong>{{ booking.user.username }}</strong></td>
+                                <td>{{ booking.date }}</td>
+                                <td>{{ booking.time }}</td>
+                                <td>{{ booking.people }}</td>
+                                <td>
+                                    {% if booking.status == 'Pending' %}
+                                        <span class="badge bg-warning text-dark">⏳ Pending</span>
+                                    {% elif booking.status == 'Approved' %}
+                                        <span class="badge bg-success">✅ Approved</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">❌ Rejected</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.status == 'Pending' %}
+                                        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#approveModal{{ booking.id }}">
+                                            Approve
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal{{ booking.id }}">
+                                            Reject
+                                        </button>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                            <!-- Approve Modal -->
+                            <div class="modal fade" id="approveModal{{ booking.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-success text-white">
+                                            <h5 class="modal-title">✅ Approve Booking</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to approve this booking for <strong>{{ booking.user.username }}</strong>?</p>
+                                            <p class="mb-0 text-muted">
+                                                <small>Date: {{ booking.date }} | Time: {{ booking.time }} | Guests: {{ booking.people }}</small>
+                                            </p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <a href="{% url 'approve_booking' booking.id %}" class="btn btn-success">Yes, Approve</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reject Modal -->
+                            <div class="modal fade" id="rejectModal{{ booking.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title">❌ Reject Booking</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to reject this booking for <strong>{{ booking.user.username }}</strong>?</p>
+                                            <p class="mb-0 text-muted">
+                                                <small>Date: {{ booking.date }} | Time: {{ booking.time }} | Guests: {{ booking.people }}</small>
+                                            </p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <a href="{% url 'reject_booking' booking.id %}" class="btn btn-danger">Yes, Reject</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">No bookings yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* ===== BASIC LAYOUT ===== */
+.admin-orders-container {
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.admin-title {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* ===== FILTER BAR ===== */
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background: #e9ecef;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.filter-btn.active {
+    background: #0d6efd;
+    color: white;
+}
+
+/* ===== ORDER CARD ===== */
+.order-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 6px solid #ffc107;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.status-confirmed { border-left-color: #0d6efd; }
+.status-ready { border-left-color: #198754; }
+.status-completed { border-left-color: #17a2b8; }
+.status-cancelled { border-left-color: #dc3545; }
+
+/* ===== HEADER ===== */
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.order-number {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.order-amount {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #27ae60;
+}
+
+/* ===== ITEMS ===== */
+.order-items {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #dee2e6;
+    padding: 6px 0;
+}
+
+.item:last-child { border-bottom: none; }
+
+/* ===== ACTION BUTTONS ===== */
+.order-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-confirm { background: #0d6efd; color: white; }
+.btn-ready { background: #198754; color: white; }
+.btn-complete { background: #17a2b8; color: white; }
+.btn-cancel { background: #dc3545; color: white; }
+.btn-disabled { background: #adb5bd; color: white; cursor: not-allowed; }
+
+</style>
+
+<div class="admin-orders-container">
+
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="admin-title">📋 Order Management</h1>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary">← Back</a>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterOrders('all')">All ({{ all_count }})</button>
+        <button class="filter-btn" onclick="filterOrders('Pending')">Pending ({{ pending_count }})</button>
+        <button class="filter-btn" onclick="filterOrders('Confirmed')">Confirmed ({{ confirmed_count }})</button>
+        <button class="filter-btn" onclick="filterOrders('Ready')">Ready ({{ ready_count }})</button>
+        <button class="filter-btn" onclick="filterOrders('Completed')">Completed ({{ completed_count }})</button>
+    </div>
+
+    {% if orders %}
+        {% for order in orders %}
+        <div class="order-card status-{{ order.order_status|lower }}" data-status="{{ order.order_status }}">
+
+            <!-- HEADER -->
+            <div class="order-header">
+                <div>
+                    <div class="order-number">{{ order.order_number }}</div>
+                    <small>User: {{ order.user.username }}</small>
+                </div>
+                <div class="order-amount">₹{{ order.final_amount }}</div>
+            </div>
+
+            <!-- STATUS -->
+            <p><strong>Status:</strong> {{ order.get_order_status_display }}</p>
+            <p><strong>Payment:</strong> {{ order.get_payment_method_display }} ({{ order.payment_status }})</p>
+
+            {% if order.estimated_time %}
+                <p><strong>Estimated Time:</strong> {{ order.estimated_time }}</p>
+            {% endif %}
+
+            <!-- ITEMS -->
+            <div class="order-items">
+                {% for item in order.orderitem_set.all %}
+                <div class="item">
+                    <span>{{ item.food.name }} (x{{ item.quantity }})</span>
+                    <span>₹{{ item.subtotal }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="order-actions">
+
+                {% if order.order_status == 'Pending' %}
+                <form method="POST" action="{% url 'confirm_order' order.id %}">
+                    {% csrf_token %}
+                    <input type="text" name="estimated_time" placeholder="e.g. 20 minutes" required>
+                    <button class="action-btn btn-confirm">Confirm</button>
+                </form>
+
+                <form method="POST" action="{% url 'cancel_order' order.id %}">
+                    {% csrf_token %}
+                    <button class="action-btn btn-cancel">Cancel</button>
+                </form>
+                {% endif %}
+
+                {% if order.order_status == 'Confirmed' %}
+                <form method="POST" action="{% url 'mark_order_ready' order.id %}">
+                    {% csrf_token %}
+                    <button class="action-btn btn-ready">Mark Ready</button>
+                </form>
+                {% endif %}
+
+                {% if order.order_status == 'Ready' %}
+                <form method="POST" action="{% url 'complete_order' order.id %}">
+                    {% csrf_token %}
+                    <button class="action-btn btn-complete">Mark Delivered</button>
+                </form>
+                {% endif %}
+
+                {% if order.order_status == 'Completed' %}
+                <button class="action-btn btn-disabled" disabled>Completed</button>
+                {% endif %}
+
+                {% if order.order_status == 'Cancelled' %}
+                <button class="action-btn btn-disabled" disabled>Cancelled</button>
+                {% endif %}
+
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No orders found.</p>
+    {% endif %}
+
+</div>
+
+<script>
+function filterOrders(status) {
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    document.querySelectorAll('.order-card').forEach(card => {
+        if (status === 'all' || card.dataset.status === status) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+</script>
+
+{% endblock %}

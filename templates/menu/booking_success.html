@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.success-container {
+    background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.success-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 600px;
+    animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-body {
+    padding: 50px 40px;
+    text-align: center;
+}
+
+.success-icon {
+    font-size: 4.5rem;
+    margin-bottom: 20px;
+}
+
+.success-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2ecc71;
+}
+
+.success-sub {
+    color: #2c3e50;
+    font-size: 1.05rem;
+    margin-top: 10px;
+}
+
+.booking-details {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 30px 0;
+    text-align: left;
+}
+
+.booking-details h5 {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row strong {
+    color: #2c3e50;
+}
+
+.action-btn {
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    border: none;
+}
+
+.btn-home {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+}
+
+.btn-review {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+}
+</style>
+
+<div class="success-container">
+    <div class="success-card">
+        <div class="card-body">
+
+            <div class="success-icon">✅</div>
+
+            <div class="success-title">
+                Booking Confirmed!
+            </div>
+
+            <p class="success-sub">
+                Thank you <strong>{{ request.user.username }}</strong> 🎉  
+                Your table has been successfully reserved.
+            </p>
+
+            <div class="booking-details">
+                <h5>🍽️ Booking Details</h5>
+
+                <div class="detail-row">
+                    <span>🪑 Table</span>
+                    <strong>Table {{ booking.table.table_number }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>👥 Seats</span>
+                    <strong>{{ booking.table.seats }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>📅 Date</span>
+                    <strong>{{ booking.date }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>🕐 Time</span>
+                    <strong>{{ booking.time }}</strong>
+                </div>
+            </div>
+
+            <a href="{% url 'home' %}" class="action-btn btn-home">
+                ← Back to Home
+            </a>
+
+            <a href="{% url 'add_table_review' booking.table.id %}"
+               class="action-btn btn-review">
+                ⭐ Leave a Review
+            </a>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
